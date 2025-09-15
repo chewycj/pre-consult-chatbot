@@ -22,13 +22,13 @@ This document defines the safety boundaries and moderation policies for the psyc
 # Minimum 20 keywords covering various crisis expressions
 CRISIS_KEYWORDS = [
     # Direct suicide mentions (examples - add more keywords):
-    "suicide", "end my life",
+    "suicide", "end my life", "kill myself", "kms", "want to die", "death", "leave this world"
     
     # Self-harm expressions (examples - add more keywords):
-    "hurt myself", "self-harm",
+    "hurt myself", "self-harm", "cut myself", "stab myself", "burn myself", "punish myself"
     
     # Imminent danger indicators (examples - add more keywords):
-    "goodbye forever", "final message",
+    "goodbye forever", "final message", "nobody cares", "nothing matters anymore", "hate myself", "hate my life", "life is pointless", "had enough", "cannot go on"
     
     # TODO: Add more keywords to reach minimum 20
 ]
@@ -54,6 +54,7 @@ Please reach out to trained crisis counselors immediately:
 - National Suicide Prevention Lifeline: 988 (24/7)
 - Crisis Text Line: Text HOME to 741741
 
+
 [TODO: Add 2-3 more sentences of supportive content]
 [TODO: Add encouraging closing statement]
 ```
@@ -72,13 +73,13 @@ Please reach out to trained crisis counselors immediately:
 # Minimum 20 keywords
 MEDICAL_INDICATORS = [
     # Diagnosis requests (add more keywords):
-    "diagnose", "what condition",
+    "diagnose", "what condition", "check for mental disorder"
     
     # Medication/treatment (add more keywords):
-    "medication", "what pills",
+    "medication", "what pills", "treatment", "treat depression", "cure", "antidepressants",
     
     # Mental health specific (add more keywords):
-    "am i depressed", "bipolar",
+    "am i depressed", "bipolar", "anxiety", "phobia"
     
     # TODO: Add more keywords to reach minimum 20
 ]
@@ -119,17 +120,17 @@ For your health and safety, please consult with:
 # Student Implementation Required:
 HARMFUL_CATEGORIES = {
     "violence": [
-        "attack", "revenge",
+        "attack", "revenge", "kill", "beat", "punch", "shoot", "slash" 
         # TODO: Add more keywords
     ],
     
     "illegal": [
-        "buy drugs", "sell drugs", 
+        "buy drugs", "sell drugs", "steal"
         # TODO: Add more keywords
     ],
     
     "harassment": [
-        "hate speech", "discriminate",
+        "hate speech", "discriminate", "stigmatise"
         # TODO: Add more keywords
     ]
 }
