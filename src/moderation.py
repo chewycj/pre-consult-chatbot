@@ -53,15 +53,35 @@ class Moderator:
         # TODO: Define crisis keywords and patterns
         # These should detect immediate risk of harm
         self.crisis_keywords = [
-            # Example (students should expand):
-            # "suicide", "end my life"
-            # TODO: Add comprehensive list
+            # Direct suicide mentions (examples - add more keywords):
+            "suicide", "end my life", "kill myself", "kms", "k1ll", 
+            "want to die", "d1e", "death", "leave this world", "take my life", 
+            "suicidal", "commit suicide", "ready to die"
+        
+            # Self-harm expressions (examples - add more keywords):
+            "hurt myself", "self-harm", "selfharm", "cut myself", "stab myself", 
+            "burn myself", "punish myself",  "harm myself", "slit my wrist",
+        
+            # Imminent danger indicators (examples - add more keywords):
+            "goodbye forever", "final message", "nobody cares", 
+            "nothing matters anymore", "hate myself", "hate my life", 
+            "life is pointless", "had enough", "cannot go on"
+
         ]
         
         # TODO: Crisis patterns - regex for complex expressions
         self.crisis_patterns = [
             # Example regex patterns:
-            # r"\b(want|going|plan|ready) to (die|kill|hurt|end)\b",
+            r"\b(want|going|plan|ready|wish) to (die|kill|hurt|end)\b",
+            r"\b(thinking|thought) about (suicide|dying|ending it)\b",
+            r"\b(no reason|point) to live\b",
+            r"\b(cut|hurt|harm|burn|kill) (myself|me)\b",
+            r"\b(goodbye|farewell|final) (message|note)\b",
+            r"\b(leave|end) (this world|it all)\b",
+            r"\b(hate|despise) (myself|my life)\b",
+            r"\b(can't|cannot|cant) (go on|take it|handle it)\b",
+            r"\b(plan|planning) to (die|kill myself|end my life)\b",
+            r"\b(final|last) (goodbye|farewell|message)\b",
             # TODO: Add patterns for crisis detection
         ]
         
@@ -70,6 +90,18 @@ class Moderator:
             # Examples:
             # "diagnose", "what condition",
             # TODO: Add medical request indicators
+            # Diagnosis requests
+            "diagnose", "diagnosis", "what condition", "check my symptoms", 
+            "evaluate condition", "check for mental disorder", "mental illness",
+            
+            # Medication & treatment
+            "medication", "medicine", "meds", "pills", "antidepressants", 
+            "xanax", "sleeping pills", "drug treatment", "prescription", 
+            "dosage", "dose", "cure", "treatment", "therapy sessions"
+            
+            # Mental health terms that could trigger diagnostic queries
+            "adhd", "ocd", "ptsd", "phobia", "panic attack", "schizophrenia",
+            "anxiety", "depression", "am i depressed", "do i have anxiety"
         ]
         
         # TODO: Medical patterns - regex for complex expressions
@@ -77,13 +109,33 @@ class Moderator:
             # Example regex patterns:
             # r"\b(prescribe|recommend|suggest) (medication|pills|drugs)\b",
             # TODO: Add patterns for medical detection
+            # medication requests
+            r"\b(prescribe|recommend|suggest) (medication|pills|drugs)\b",
+            r"\bwhat (medication|medicine|pills) should i take\b",
+            r"\b(should|can) i (take|use) (antidepressants|xanax|sleeping pills)\b",
+            r"\b(recommend|recommended) (dosage|dose) of (medication|antidepressants|xanax|sleeping pills)\b",
+
+            # diagnosis requests
+            r"\b(check|diagnose|test) (my symptoms|for mental disorder|for mental illness)\b",
+            r"\bdo i have (depression|anxiety|adhd|ocd|ptsd|phobia|panic attack|schizophrenia)\b",
+            r"\b(can you|will you) (cure|heal|fix|treat) me\b"
+            r"\bwhat (?:disorder|condition|illness) do i have\b"
+            r"\bhow (to|do i) (treat|cure) (depression|anxiety|phobia|ptsd|ocd)\b"
         ]
         
         # TODO: Define harmful content patterns
         self.harmful_content = {
-            "violence": [],  # TODO: Violence indicators
-            "illegal": [],   # TODO: Illegal activity indicators
-            "harassment": [] # TODO: Harassment indicators
+            "violence": ["attack", "revenge", "kill", "beat", "punch", 
+                         "shoot", "slash", "stab", "bomb", "terrorist", 
+                         "massacre", "assault", "torture", "execute", "murder", 
+                         "destroy"],  # TODO: Violence indicators
+            "illegal": ["buy drugs", "sell drugs", "steal", "rob", "theft", 
+                        "hacking", "smuggle", "pirate", "illegal", "weapon", 
+                        "gun", "drug dealing", "trafficking", "fraud", 
+                        "money laundering", "arson", "vandalism"],   # TODO: Illegal activity indicators
+            "harassment": ["hate speech", "discriminate", "stigmatise"
+                            "bully", "harass", "threaten", "intimidate", 
+                            "insult", "abuse", "mock"] # TODO: Harassment indicators
         }
         
         # TODO: Define confidence thresholds based on safety mode
@@ -113,29 +165,46 @@ class Moderator:
             "crisis": """
 I'm deeply concerned about what you're sharing. Your safety is my top priority, and I want you to know that help is available right now.
 
-Please reach out to trained crisis counselors immediately:
-- National Suicide Prevention Lifeline: 988 (24/7)
-- Crisis Text Line: Text HOME to 741741
+Please reach out to trained crisis counselors immediately (Singapore-specific resources):
+- Samaritans of Singapore Limited (SOS): 1767 (24/7)
+- National mindline 1771, with 3 ways to reach out to them:
+    1. Telephone hotline at 1771;
+    2. Mobile messaging service via WhatsApp at +65-6669-1771; and
+    3. Online webchat through the chat widget hosted on https://mindline.sg/fsmh
 
-[TODO: Add 2-3 more sentences of supportive content]
-[TODO: Add encouraging closing statement]
+Intense emotions and tough times are difficult to process, and it may feel overwhelming. 
+But things can get better. People you trust and trained professionals want to help you and will lend a listening ear.
+
+You are not alone, and it’s absolutely alright to seek help. 
             """,
             
             "medical": """
-I understand you're looking for medical guidance, and I appreciate you reaching out. However, I'm not qualified to provide medical diagnoses or treatment recommendations.
+I understand you're looking for medical guidance, and I appreciate you reaching out. 
+However, I'm not qualified to provide medical diagnoses or treatment recommendations. 
+A licensed medical professional would be the right person who could evaluate what you may need for your situation.
 
-[TODO: Add acknowledgment of specific concern if appropriate]
+Please reach out to someone who can support you immediately. There are people who care about you and want to help. 
 
 For your health and safety, please consult with:
 - A licensed psychiatrist for medication questions
+- A therapist for diagnostic assessments and therapy recommendations
+- Your primary care physician if you need general consultation over medical conditions
 
-[TODO: Add 2-3 sentences about what you CAN offer]
+
+What I can offer you is conversational support, a safe and non-judgemental space to share your thoughts, 
+and provide information on how to get to trusted medical help. 
+You are not alone, professional help is available and can guide you through the situation you are facing. 
+Once you feel ready to do so, please consider booking an appointment with a doctor or medical professional!
             """,
 
             "harmful": """
-I cannot and will not provide assistance with that request as it could potentially cause harm.
+I cannot and will not provide assistance with that request as it could potentially cause harm, not only to you, but also to others. 
+Your request may have contained mentions of violence, illegal activities, or harassment, which goes against safety policies. 
 
-[TODO: Add clear boundary statement and redirect to appropriate topics]
+
+My main goal is to create a safe space for conversation for you. 
+It is valid to experience emotions like anger or frustration, but there are healthy ways to cope with these emotions. 
+Would you like to explore some safe strategies, such as stress management or hobbies you like, to manage some of the feelings you are experiencing? 
             """,
             
             "disclaimer": """
@@ -143,13 +212,24 @@ Welcome to the Psychological Pre-Consultation Support System.
 
 IMPORTANT DISCLAIMER:
 This is an AI support system designed to provide initial emotional support and guidance. Please note:
-[TODO: Add 4-5 bullet points about system limitations]
+- I cannot provide medical diagnoses or treatment recommendations.
+- I am not a substitute for professional mental health care.
+- I will not condone any acts of violence, illegal activities, or harassment.
+- In cases of crisis or emergency, please contact a qualified professional or helpline immediately.
 
 When to Seek Immediate Help:
-[TODO: Add crisis indicators and resources]
+If you are in crisis or know someone who is, please seek help from a trained professional and/or contact helplines below.
+- Samaritans of Singapore Limited (SOS): 1767 (24/7 Hotline) or 9151 1767 (via WhatsApp)
+- National mindline 1771, with 3 ways to reach out to them:
+    1. Telephone hotline at 1771;
+    2. Mobile messaging service via WhatsApp at +65-6669-1771; and
+    3. Online webchat through the chat widget hosted on https://mindline.sg/fsmh
 
 What I Can Offer:
-[TODO: Add 4-5 bullet points about available support]
+- Conversational support and listening ear to assess your needs
+- Safe space that is available 24/7 for you to share your thoughts
+- Encouragement to seek help when needed, it is absolutely okay to so so!
+- Information on how to get to trusted medical help
 
 Your wellbeing is important. How can I support you today?
             """,
@@ -184,6 +264,15 @@ Your wellbeing is important. How can I support you today?
             return crisis_check
         
         # TODO: Other Steps - Check for ???
+        crisis_check = self._check_medical(user_prompt)
+        if crisis_check.action != ModerationAction.ALLOW:
+            logger.warning(f"Crisis detected: {crisis_check.reason}")
+            return crisis_check
+        
+        crisis_check = self._check_harmful(user_prompt)
+        if crisis_check.action != ModerationAction.ALLOW:
+            logger.warning(f"Crisis detected: {crisis_check.reason}")
+            return crisis_check
 
         # If model response provided, check it
         if model_response:
@@ -232,8 +321,37 @@ Your wellbeing is important. How can I support you today?
 
         text_lower = text.lower()
         detected_keywords = []
+        detected_patterns = []
         confidence = 0.0
+
+        for keyword in self.crisis_keywords:
+            if keyword in text_lower:
+                detected_keywords.append(keyword)
+                confidence = max(confidence, 0.7)
+
+        for pattern in self.crisis_patterns:
+            if re.search(pattern, text_lower):
+                detected_patterns.append(pattern)
+                confidence = max(confidence, 0.85)
         
+        threshold = self.confidence_thresholds.get(self.safety_mode, {}).get("crisis")
+
+        # 6. If confidence >= threshold, BLOCK
+        if confidence >= threshold:
+            policy_tags = []
+            if detected_keywords:
+                policy_tags.append("crisis_keyword")
+            if detected_patterns:
+                policy_tags.append("crisis_pattern")
+            reason = f"I have detected crisis indicators: keywords={detected_keywords}, patterns={detected_patterns}"
+            return ModerationResult(
+                action=ModerationAction.BLOCK,
+                tags=policy_tags,
+                reason=reason,
+                confidence=confidence,
+                fallback_response=self.fallback_templates.get("crisis", ""),
+            )
+
         return ModerationResult(
             action=ModerationAction.ALLOW,
             tags=[],
@@ -259,16 +377,34 @@ Your wellbeing is important. How can I support you today?
         """
         text_lower = text.lower()
         detected_keywords = []
+        detected_patterns = []
         confidence = 0.0
 
-        # TODO: Implement keyword checking
-        # Similar to crisis checking but with medical keywords
+        for keyword in self.medical_keywords:
+            if keyword in text_lower:
+                detected_keywords.append(keyword)
+                confidence = max(confidence, 0.7)
+
+        for pattern in self.medical_patterns:
+            if re.search(pattern, text_lower):
+                detected_patterns.append(pattern)
+                confidence = max(confidence, 0.85)
         
-        # TODO: Implement pattern checking
-        # Similar to crisis checking but with medical patterns
-        
-        # TODO: Threshold comparison and return
-        # Remember to use ModerationAction.SAFE_FALLBACK for medical
+        threshold = self.confidence_thresholds.get(self.safety_mode, {}).get("medical")
+        if confidence >= threshold:
+            policy_tags = []
+            if detected_keywords:
+                policy_tags.append("medical_keyword")
+            if detected_patterns:
+                policy_tags.append("medical_pattern")
+            reason = f"I have detected medical request indicators: keywords={detected_keywords}, patterns={detected_patterns}"
+            return ModerationResult(
+                action=ModerationAction.SAFE_FALLBACK,
+                tags=policy_tags,
+                reason=reason,
+                confidence=confidence,
+                fallback_response=self.fallback_templates.get("medical", "")
+            )
         
         return ModerationResult(
             action=ModerationAction.ALLOW,
@@ -298,6 +434,21 @@ Your wellbeing is important. How can I support you today?
         text_lower = text.lower()
         detected_categories = []
         confidence = 0.0
+
+        for category, keywords in self.harmful_content.items():
+            for keyword in keywords:
+                if keyword in text_lower:
+                    detected_categories.append(f"Category: {category}, Keyword: {keyword}")
+                    confidence = max(confidence, 0.75)
+
+        threshold = self.confidence_thresholds.get(self.safety_mode, {}).get("harmful")
+        if confidence >= threshold:
+            return ModerationResult(
+                action=ModerationAction.BLOCK,
+                tags=detected_categories,
+                reason=f"Harmful content detected: {detected_categories}",
+                confidence=confidence,
+                fallback_response=self.fallback_templates.get("harmful", ""))
         
         return ModerationResult(
             action=ModerationAction.ALLOW,
