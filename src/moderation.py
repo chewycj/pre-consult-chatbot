@@ -42,7 +42,6 @@ class Moderator:
     def _initialize_rules(self):
         """
         Initialize moderation rules based on POLICY.md.
-        TODO: Students must define these based on their POLICY.md
         
         IMPLEMENTATION GUIDE:
         1. Copy all keywords and patterns from your completed POLICY.md
@@ -50,7 +49,7 @@ class Moderator:
         3. Templates should be multi-line strings with proper formatting
         """
         
-        # TODO: Define crisis keywords and patterns
+        # Define crisis keywords and patterns
         # These should detect immediate risk of harm
         self.crisis_keywords = [
             # Direct suicide mentions (examples - add more keywords):
@@ -63,35 +62,32 @@ class Moderator:
             "burn myself", "punish myself",  "harm myself", "slit my wrist",
         
             # Imminent danger indicators (examples - add more keywords):
-            "goodbye forever", "final message", "nobody cares", 
+            "goodbye forever", "final message", "nobody cares", "nobody understands",
             "nothing matters anymore", "hate myself", "hate my life", 
-            "life is pointless", "had enough", "cannot go on"
+            "life is pointless", "had enough", "cannot go on", "feel alone"
 
         ]
         
-        # TODO: Crisis patterns - regex for complex expressions
+        # Crisis patterns - regex for complex expressions
         self.crisis_patterns = [
-            # Example regex patterns:
-            r"\b(want|going|plan|ready|wish) to (die|kill|hurt|end)\b",
+            r"\b(want|going|plan|ready|wish) to (die|kill|end)\b",
             r"\b(thinking|thought) about (suicide|dying|ending it)\b",
             r"\b(no reason|point) to live\b",
-            r"\b(cut|hurt|harm|burn|kill) (myself|me)\b",
+            r"\b(cut|hurt|harm|burn|kill) (myself)\b",
             r"\b(goodbye|farewell|final) (message|note)\b",
             r"\b(leave|end) (this world|it all)\b",
             r"\b(hate|despise) (myself|my life)\b",
             r"\b(can't|cannot|cant) (go on|take it|handle it)\b",
             r"\b(plan|planning) to (die|kill myself|end my life)\b",
             r"\b(final|last) (goodbye|farewell|message)\b",
-            # TODO: Add patterns for crisis detection
+            r"\b(feel|feeling) (so )?(alone|hopeless|worthless|trapped|desperate)\b"
+            r"\b(wonder|thinking|thought) if (life is worth living|anyone cares)\b"
         ]
         
-        # TODO: Define medical request patterns
+        # Define medical request patterns
         self.medical_keywords = [
-            # Examples:
-            # "diagnose", "what condition",
-            # TODO: Add medical request indicators
             # Diagnosis requests
-            "diagnose", "diagnosis", "what condition", "check my symptoms", 
+            "diagnose", "diagnosis", "what condition", "check my symptoms", "symptom", "symptoms",
             "evaluate condition", "check for mental disorder", "mental illness",
             
             # Medication & treatment
@@ -101,14 +97,11 @@ class Moderator:
             
             # Mental health terms that could trigger diagnostic queries
             "adhd", "ocd", "ptsd", "phobia", "panic attack", "schizophrenia",
-            "anxiety", "depression", "am i depressed", "do i have anxiety"
+            "anxiety", "depression", "am i depressed", "do i have anxiety", "bipolar"
         ]
         
-        # TODO: Medical patterns - regex for complex expressions
+        # Medical patterns - regex for complex expressions
         self.medical_patterns = [
-            # Example regex patterns:
-            # r"\b(prescribe|recommend|suggest) (medication|pills|drugs)\b",
-            # TODO: Add patterns for medical detection
             # medication requests
             r"\b(prescribe|recommend|suggest) (medication|pills|drugs)\b",
             r"\bwhat (medication|medicine|pills) should i take\b",
@@ -123,22 +116,22 @@ class Moderator:
             r"\bhow (to|do i) (treat|cure) (depression|anxiety|phobia|ptsd|ocd)\b"
         ]
         
-        # TODO: Define harmful content patterns
+        # Define harmful content patterns
         self.harmful_content = {
             "violence": ["attack", "revenge", "kill", "beat", "punch", 
                          "shoot", "slash", "stab", "bomb", "terrorist", 
                          "massacre", "assault", "torture", "execute", "murder", 
-                         "destroy"],  # TODO: Violence indicators
+                         "destroy", "hurt"], 
             "illegal": ["buy drugs", "sell drugs", "steal", "rob", "theft", 
                         "hacking", "smuggle", "pirate", "illegal", "weapon", 
                         "gun", "drug dealing", "trafficking", "fraud", 
-                        "money laundering", "arson", "vandalism"],   # TODO: Illegal activity indicators
+                        "money laundering", "arson", "vandalism"],  
             "harassment": ["hate speech", "discriminate", "stigmatise"
                             "bully", "harass", "threaten", "intimidate", 
-                            "insult", "abuse", "mock"] # TODO: Harassment indicators
+                            "insult", "abuse", "mock"]
         }
         
-        # TODO: Define confidence thresholds based on safety mode
+        # Define confidence thresholds based on safety mode
         self.confidence_thresholds = {
             "strict": { 
                 "crisis": 0.3,
@@ -146,24 +139,22 @@ class Moderator:
                 "harmful": 0.5,
             },
             "balanced": { 
-                # TODO: Adjust these
-                "crisis": 0.5,
-                "medical": 0.5,
-                "harmful": 0.5,
+                "crisis": 0.6,
+                "medical": 0.6,
+                "harmful": 0.7,
             },
             "permissive": { 
-                # TODO: Adjust these
-                "crisis": 0.5,
-                "medical": 0.5,
-                "harmful": 0.5,
+                "crisis": 0.8,
+                "medical": 0.8,
+                "harmful": 0.85,
             }
         }
         
-        # TODO: Define safety fallback templates
-        # Copy complete templates from POLICY.md
+        # Define safety fallback templates
+        # Complete templates from POLICY.md
         self.fallback_templates = {
             "crisis": """
-I'm deeply concerned about what you're sharing. Your safety is my top priority, and I want you to know that help is available right now.
+I'm deeply concerned about what you're sharing. Safety is my top priority, and I want you to know that help is available right now.
 
 Please reach out to trained crisis counselors immediately (Singapore-specific resources):
 - Samaritans of Singapore Limited (SOS): 1767 (24/7)
@@ -173,7 +164,7 @@ Please reach out to trained crisis counselors immediately (Singapore-specific re
     3. Online webchat through the chat widget hosted on https://mindline.sg/fsmh
 
 Intense emotions and tough times are difficult to process, and it may feel overwhelming. 
-But things can get better. People you trust and trained professionals want to help you and will lend a listening ear.
+But things can get better. People you trust and trained professionals want to help and will lend a listening ear.
 
 You are not alone, and it’s absolutely alright to seek help. 
             """,
@@ -208,7 +199,7 @@ Would you like to explore some safe strategies, such as stress management or hob
             """,
             
             "disclaimer": """
-Welcome to the Psychological Pre-Consultation Support System.
+Welcome to the Psychological Pre-Consultation Support System, pEAR!
 
 IMPORTANT DISCLAIMER:
 This is an AI support system designed to provide initial emotional support and guidance. Please note:
@@ -263,16 +254,16 @@ Your wellbeing is important. How can I support you today?
             logger.warning(f"Crisis detected: {crisis_check.reason}")
             return crisis_check
         
-        # TODO: Other Steps - Check for ???
-        crisis_check = self._check_medical(user_prompt)
-        if crisis_check.action != ModerationAction.ALLOW:
-            logger.warning(f"Crisis detected: {crisis_check.reason}")
-            return crisis_check
-        
-        crisis_check = self._check_harmful(user_prompt)
-        if crisis_check.action != ModerationAction.ALLOW:
-            logger.warning(f"Crisis detected: {crisis_check.reason}")
-            return crisis_check
+        # Other Steps - Check for Medical and Harmful content
+        medical_check = self._check_medical(user_prompt)
+        if medical_check.action != ModerationAction.ALLOW:
+            logger.warning(f"Medical concern detected: {medical_check.reason}")
+            return medical_check
+
+        harmful_check = self._check_harmful(user_prompt)
+        if harmful_check.action != ModerationAction.ALLOW:
+            logger.warning(f"Harmful content detected: {harmful_check.reason}")
+            return harmful_check
 
         # If model response provided, check it
         if model_response:
@@ -299,8 +290,6 @@ Your wellbeing is important. How can I support you today?
     def _check_crisis(self, text: str) -> ModerationResult:
         """
         Check for crisis indicators.
-        
-        TODO: Implement crisis detection
         
         ALGORITHM:
         1. Convert text to lowercase
@@ -362,8 +351,7 @@ Your wellbeing is important. How can I support you today?
     def _check_medical(self, text: str) -> ModerationResult:
         """
         Check for medical requests.
-        
-        TODO: Implement medical request detection
+        Implement medical request detection
         
         ALGORITHM:
         1. Convert text to lowercase
@@ -416,8 +404,7 @@ Your wellbeing is important. How can I support you today?
     def _check_harmful(self, text: str) -> ModerationResult:
         """
         Check for harmful content.
-        
-        TODO: Implement harmful content detection
+        Implement harmful content detection
         
         ALGORITHM:
         1. Convert text to lowercase
@@ -460,8 +447,7 @@ Your wellbeing is important. How can I support you today?
     def _check_model_output(self, response: str) -> ModerationResult:
         """
         Check model output for policy violations.
-        
-        TODO: Ensure model didn't provide medical advice or break boundaries
+        Ensure model didn't provide medical advice or break boundaries
         
         ALGORITHM:
         1. Check for medical_keywords that shouldn't appear
@@ -472,7 +458,36 @@ Your wellbeing is important. How can I support you today?
         """
 
         response_lower = response.lower()
+        detected_keywords = []
+        detected_patterns = []
+        confidence = 0.0
+
+        for keyword in self.medical_keywords:
+            if keyword in response_lower:
+                detected_patterns.append(keyword)
+                confidence = max(confidence, 0.4) # lower confidence for output (might include the keywords from clarifications)
+
+        for pattern in self.medical_patterns:
+            if re.search(pattern, response_lower):
+                detected_patterns.append(pattern)
+                confidence = max(confidence, 0.5) # lower confidence for output
         
+        threshold = self.confidence_thresholds.get(self.safety_mode, {}).get("medical")
+        if confidence >= threshold:
+            policy_tags = []
+            if detected_keywords:
+                policy_tags.append("medical_keyword")
+            if detected_patterns:
+                policy_tags.append("medical_pattern")
+            reason = f"I have detected a medical related response: keywords={detected_keywords}, patterns={detected_patterns}"
+            return ModerationResult(
+                action=ModerationAction.SAFE_FALLBACK,
+                tags=policy_tags,
+                reason=reason,
+                confidence=confidence,
+                fallback_response=self.fallback_templates.get("medical", "")
+            )
+
         return ModerationResult(
             action=ModerationAction.ALLOW,
             tags=[],
