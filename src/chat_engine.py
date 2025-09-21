@@ -33,7 +33,16 @@ class ChatEngine:
         self.conversation_history: List[Dict] = []
         self.turn_count = 0 # number of user->assistant turns completed
         self.session_id = f"session_{int(time.time())}"
-        self.first_interaction = True
+        self.first_interaction = False
+
+        # Add disclaimer as the first assistant message
+        disclaimer = self.moderator.get_disclaimer()
+        if disclaimer:
+            self.conversation_history.append({
+                "role": "assistant",
+                "content": disclaimer,
+                "safety_action": "allow"
+            })
     
     def process_message(
         self,
@@ -84,15 +93,14 @@ class ChatEngine:
         # Step 2: Moderate user input
         input_moderation = self._moderate_input(user_input)
 
-        # TODO: Step 3 - Handle moderation results
+        # Step 3 - Handle moderation results
         # CRITICAL: Different actions require different handling:
         # - BLOCK: Return immediately with fallback message (no model generation)
         # - SAFE_FALLBACK: Return immediately with safety resources (no model generation)
         # - ALLOW: Continue to model generation
         
-        # TODO: Handle moderation result
         if input_moderation.action == ModerationAction.BLOCK:
-            # TODO: Handle BLOCK action - Complete this section
+            # Handle BLOCK action 
             # 
             # IMPLEMENTATION STEPS:
             # 1. Create final_response using _prepare_final_response() with:
@@ -108,7 +116,7 @@ class ChatEngine:
                 action=ModerationAction.ALLOW,
                 tags=[],
                 reason="",
-                confidence=1.0,
+                confidence=0.0,
                 fallback_response=None
             )
 
@@ -119,8 +127,8 @@ class ChatEngine:
                 output_moderation=dummy_output_moderation,
             )
 
-            if disclaimer:
-                final_response["response"] = f"{disclaimer}\n{final_response['response']}"
+            # if disclaimer:
+            #     final_response["response"] = f"{disclaimer}\n{final_response['response']}"
 
             self._update_history(user_input, final_response["response"])
             final_response["latency_ms"] = int((time.time() - start_time) * 1000)
@@ -129,7 +137,7 @@ class ChatEngine:
             return final_response
 
         elif input_moderation.action == ModerationAction.SAFE_FALLBACK:
-            # TODO: Handle SAFE_FALLBACK action - Complete this section
+            # Handle SAFE_FALLBACK action
             #
             # IMPLEMENTATION STEPS (similar to BLOCK but with different model indicator):
             # 1. Create final_response using _prepare_final_response() with:
@@ -144,7 +152,7 @@ class ChatEngine:
                 action=ModerationAction.ALLOW,
                 tags=[],
                 reason="",
-                confidence=1.0,
+                confidence=0.0,
                 fallback_response=None
             )
 
@@ -155,8 +163,8 @@ class ChatEngine:
                 output_moderation=dummy_output_moderation,
             )
 
-            if disclaimer:
-                final_response["response"] = f"{disclaimer}\n{final_response['response']}"
+            # if disclaimer:
+            #     final_response["response"] = f"{disclaimer}\n{final_response['response']}"
 
             self._update_history(user_input, final_response["response"])
             final_response["latency_ms"] = int((time.time() - start_time) * 1000)
@@ -185,8 +193,8 @@ class ChatEngine:
         )
         
         # Add disclaimer if first interaction
-        if disclaimer:
-            final_response["response"] = f"{disclaimer}\n\n---\n\n{final_response['response']}"
+        # if disclaimer:
+        #     final_response["response"] = f"{disclaimer}\n\n---\n\n{final_response['response']}"
         
         # Step 6: Update conversation history
         self._update_history(user_input, final_response["response"])
@@ -195,7 +203,7 @@ class ChatEngine:
         final_response["latency_ms"] = int((time.time() - start_time) * 1000)
         final_response["turn_count"] = self.turn_count
         final_response["session_id"] = self.session_id
-        
+        print(final_response)
         return final_response
     
     def _moderate_input(self, user_input: str) -> ModerationResult:
@@ -239,7 +247,7 @@ class ChatEngine:
                 system_prompt=SYSTEM_PROMPT,
                 conversation_history=context,
             )
-            
+
             return response
             
         except Exception as e:
@@ -348,8 +356,6 @@ class ChatEngine:
         # TODO: Check for conversation length limits
         # When MAX_CONVERSATION_TURNS is reached, add a system message to history
         if self.turn_count >= MAX_CONVERSATION_TURNS:
-            # TODO: Complete the conversation limit handling
-            # 
             # IMPLEMENTATION STEPS:
             # 1. Add a end-of-conversation message to conversation history:
             #    self.conversation_history.append({
@@ -360,7 +366,8 @@ class ChatEngine:
             # Note: The warning message for approaching limit is already handled in _prepare_final_response()
             self.conversation_history.append({
                 "role": "assistant",
-                "content": "Oh no, we have reached the conversation limit! For a better experience, please take a break, or start a new session if you wish to continue."
+                "content": "Oh no, we have reached the conversation limit! For a better experience, please take a break, or start a new session if you wish to continue.",
+                "safety_action": "allow"
             })
 
         # Optional: Trim history if it exceeds window size (already implemented)

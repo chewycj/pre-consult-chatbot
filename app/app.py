@@ -1,7 +1,10 @@
+from typing import Dict
 import requests
 import streamlit as st
-
-BACKEND_URL = "http://localhost:8000/chat"  # adjust if backend runs elsewhere
+import sys
+import os
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+from src.chat_engine import get_engine 
 
 st.set_page_config(page_title="Pre-consultation Chatbot", page_icon="🍐")
 st.title("🍐 pEAR: Psychological Pre-consultation Chatbot")
@@ -12,38 +15,70 @@ st.info(
     " If you are in crisis, please contact a medical professional or emergency services."
 )
 
+# Get the chat engine instance
+engine = get_engine()
+
 # Initialize conversation history
 if "history" not in st.session_state:
-    st.session_state.history = []  # list of {"role": "...", "content": "..."}
+    st.session_state.history = engine.conversation_history.copy() # list of {"role": "...", "content": "..."}
+if "loading" not in st.session_state:
+    st.session_state.loading = False
+if "engine" not in st.session_state:
+    st.session_state.engine = get_engine()
 
-# Render history
+safety_indicators = {
+    "allow": {"color": "#C5DEA9", "indicator": "💬"},
+    "safe_fallback": {"color": "#FDEBC8", "indicator": "⚠️"},
+    "block": {"color": "#E89464", "indicator": "⛔"},
+}
+
+# Render history - made with copilot prompt
+# Prompt: how to keep the colour for previous messages? 
+# my current code has the indicator for the latest response, but previous responses 
+# lose their indicators
 for turn in st.session_state.history:
     with st.chat_message(turn["role"]):
-        st.write(turn["content"])
-
-# Send message to backend
-def send_message(user_text: str) -> str:
-    try:
-        resp = requests.post(BACKEND_URL, json={"message": user_text}, timeout=60)
-        resp.raise_for_status()
-        return resp.json().get("response", "[No response]")
-    except Exception as e:
-        return f"[Error contacting backend: {e}]"
+        if turn["role"] == "assistant":
+            indicator = safety_indicators.get(turn.get("safety_action", "allow"), safety_indicators["allow"]) # default to allow
+            color = indicator["color"]
+            icon = indicator["indicator"]
+            st.markdown(
+                f"""
+                <div style='background:{color}; color:#000000; padding:12px; border-radius:12px; display:flex; flex-direction:column; align-items:left;'>
+                    <span style='font-size:1em; margin-bottom:3px;'>{icon}</span>
+                    <span>{turn['content']}</span>
+                </div>
+                """,
+                unsafe_allow_html=True
+            )
+        else:
+            st.write(turn["content"])
 
 # Chat input
-user_input = st.chat_input("Type your message")
-
-if user_input:
-    # Show user message
+if user_input := st.chat_input("Type your message here..."):
     st.session_state.history.append({"role": "user", "content": user_input})
     with st.chat_message("user"):
         st.write(user_input)
 
     # Get assistant reply
-    reply = send_message(user_input)
-    st.session_state.history.append({"role": "assistant", "content": reply})
+    result = engine.process_message(user_input)
+    reply = result.get("response", "[No response]")
+    safety_action = result.get("safety_action", "allow")  # Use "allow" as default
+    st.session_state.history.append({"role": "assistant", "content": reply, "safety_action": safety_action})
+
     with st.chat_message("assistant"):
-        st.write(reply)
+        indicator = safety_indicators.get(safety_action, safety_indicators["allow"])
+        color = indicator["color"]
+        icon = indicator["indicator"]
+        st.markdown(
+            f"""
+            <div style='background:{color}; color:#000000; padding:12px; border-radius:12px; display:flex; flex-direction:column; align-items:left;'>
+                <span style='font-size:1em; margin-bottom:3px;'>{icon}</span>
+                <span>{reply}</span>
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
 
 # AI Disclaimer at the bottom - code made with reference to Copilot prompt
 st.markdown(
@@ -65,7 +100,7 @@ st.markdown(
         text-align: center;
         z-index: 100;
     '>
-        ⚠️ As an AI, pEAR is not a substitute for professional help. Its main purpose is to provide emotional support.
+        ⚠️ As an AI, pEAR is not a substitute for professional help.
     </div>
     """,
     unsafe_allow_html=True
