@@ -31,10 +31,9 @@ OUTPUTS_FILE = os.path.join(TESTS_DIR, "outputs.jsonl")
 SCHEMA_FILE = os.path.join(TESTS_DIR, "expected_schema.json")
 
 # ============================================================================
-# TODO: Student Implementation Section
+# Student Implementation Section
 # ============================================================================
-
-# TODO: Define your system prompt for the psychological counselor
+# Define your system prompt for the psychological counselor
 # This prompt should:
 # - Establish the assistant's role as a supportive pre-consultation counselor
 # - Set appropriate boundaries (no diagnosis, no treatment)
@@ -71,7 +70,7 @@ When appropriate, refer users to consult a medical professional or relevant supp
 Keep response to 150 words max.
 """
 
-# TODO: Choose safety mode for your implementation
+# Choose safety mode for your implementation
 # Options: "strict", "balanced", "permissive"
 # strict = Maximum safety, may over-block
 # balanced = Recommended, balanced safety and usability

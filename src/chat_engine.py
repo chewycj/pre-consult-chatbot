@@ -53,13 +53,13 @@ class ChatEngine:
         """
         Process a single message through the conversation pipeline.
         
-        TODO: Complete the conversation flow implementation
+        Complete the conversation flow implementation
         
         IMPLEMENTATION GUIDE:
         The method follows this pipeline:
         1. Show disclaimer if first interaction (already implemented)
         2. Moderate user input (already implemented)
-        3. Handle moderation results (TODO - see detailed instructions below)
+        3. Handle moderation results
         4. Generate response IF input passes (partially implemented)
         5. Moderate output and prepare final response (already implemented)
         6. Update history and add metadata (already implemented)
@@ -203,7 +203,6 @@ class ChatEngine:
         final_response["latency_ms"] = int((time.time() - start_time) * 1000)
         final_response["turn_count"] = self.turn_count
         final_response["session_id"] = self.session_id
-        print(final_response)
         return final_response
     
     def _moderate_input(self, user_input: str) -> ModerationResult:
@@ -330,7 +329,7 @@ class ChatEngine:
         """
         Update conversation history.
         
-        TODO: Implement conversation limit handling
+        Implement conversation limit handling
         
         This method should:
         - Add user and assistant turns to history
@@ -353,17 +352,9 @@ class ChatEngine:
         # Increment turn counter
         self.turn_count += 1
         
-        # TODO: Check for conversation length limits
+        # Check for conversation length limits
         # When MAX_CONVERSATION_TURNS is reached, add a system message to history
         if self.turn_count >= MAX_CONVERSATION_TURNS:
-            # IMPLEMENTATION STEPS:
-            # 1. Add a end-of-conversation message to conversation history:
-            #    self.conversation_history.append({
-            #        "role": "",
-            #        "content": ""
-            #    })
-            #
-            # Note: The warning message for approaching limit is already handled in _prepare_final_response()
             self.conversation_history.append({
                 "role": "assistant",
                 "content": "Oh no, we have reached the conversation limit! For a better experience, please take a break, or start a new session if you wish to continue.",

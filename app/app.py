@@ -1,5 +1,3 @@
-from typing import Dict
-import requests
 import streamlit as st
 import sys
 import os
@@ -10,7 +8,7 @@ st.set_page_config(page_title="Pre-consultation Chatbot", page_icon="🍐")
 st.title("🍐 pEAR: Psychological Pre-consultation Chatbot")
 
 st.info(
-    "Hello! I am pEAR, a pre-consultation assistant, here to lend you a listening ear!"
+    "Hello! I am pEAR , a pre-consultation assistant, here to lend you a listening ear!"
     " Please note that I cannot diagnose, treat, or provide medical advice."
     " If you are in crisis, please contact a medical professional or emergency services."
 )
